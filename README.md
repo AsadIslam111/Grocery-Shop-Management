@@ -11,3 +11,5 @@ It's an effortless project that can be helpful for small local shopowner. It can
 
 
 # Installation
+
+Just download the C file and run through compiler installed PC 
