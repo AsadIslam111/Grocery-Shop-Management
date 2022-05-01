@@ -488,7 +488,7 @@ void dashboard(products * all_products)
 		"1. Add Product\n"
 		"2. Show All Products\n"
 		"3. Search product\n"
-		"4. Make Memo For Customer\n"
+		"4. Invoice\n"
 		"5. Sample Products\n"
 		"6. Exit\n"
 	                           );
