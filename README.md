@@ -1,3 +1,5 @@
+ ![Grocery_Art](https://ibb.co/2qHsmW1)
+
 # Grocery-Shop-Management
 This repo is about Grocery Shop Management system in C language. Small Shopkeepers can not bear the expense of buying software. They waste time on a manual stock log. Older people are uncomfortable with tech things, but it's as easy as 123. 
 # Usages
