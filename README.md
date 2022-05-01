@@ -8,3 +8,5 @@ It's an effortless project that can be helpful for small local shopowner. It can
 2. Stock summary 
 3. Search product in stock 
 4. Invoice 
+
+#Installation
