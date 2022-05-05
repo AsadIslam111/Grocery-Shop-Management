@@ -14,6 +14,22 @@
 #include <windows.h>
 
 
+char * CurrentTime()
+{
+
+ time_t time_function = time(NULL);
+    struct tm *time_pointer = localtime(&time_function);
+
+    char temp[51];
+    strftime(temp, sizeof(temp), "%c", time_pointer);
+
+    char * current_time = (char *) malloc(sizeof(char));
+    strcpy(current_time, temp);
+
+    return (char *) current_time;
+}
+
+
 /** =-==-=-==-=-==-=-==-=-==-=-==-=-==-=
     - - - - - - structures - - - - - -
     =-==-=-==-=-==-=-==-=-==-=-==-=-==-=*/
@@ -636,6 +652,8 @@ void Dashboard(products * all_products)
 	all_products = RefreshDatabase();
 	system("cls");
 
+printf("%s\n", CurrentTime());	
+	
 	printf(
 		"------------\n"
 		" Dashboard\n"
