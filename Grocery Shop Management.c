@@ -1,92 +1,416 @@
-/*
-	Asad Islam
-	213902054@student.green.edu.bd
-	213902054, 213-DB
-	Green University of Bangladesh
-*/
-#include<stdio.h>
-#include<stdlib.h>
+
+/* ***************************************************
+ * Asad Islam
+ * asadulshakib10@gmail.com
+ * 213902054, 213DB, Green University of Bangladesh
+
+ * ***************************************************
+ *****************************************************/
+
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <conio.h>
+#include <windows.h>
 
-char * CurrentTime()
+
+/** =-==-=-==-=-==-=-==-=-==-=-==-=-==-=
+    - - - - - - structures - - - - - -
+    =-==-=-==-=-==-=-==-=-==-=-==-=-==-=*/
+
+typedef struct product
 {
-
- time_t time_function = time(NULL);
-    struct tm *time_pointer = localtime(&time_function);
-
-    char temp[51];
-    strftime(temp, sizeof(temp), "%c", time_pointer);
-
-    char * current_time = (char *) malloc(sizeof(char));
-    strcpy(current_time, temp);
-
-    return (char *) current_time;
-}
-
-
-typedef struct product_info
-{
-    char product_name[20];
+	char product_name[20];
 	float product_price;
 	int product_count;
-}
-    product_info;
+} product;
 
-typedef struct products
-{
-	product_info * single_product;
+typedef struct products{
+	product * product;
 	struct products * next_product;
+} products;
+
+
+/* =-==-=-==-=-==-=-==-=-==-=-==-=-==-=
+  - - - - - - prototypes - - - - - -
+ =-==-=-==-=-==-=-==-=-==-=-==-=-==-=*/
+
+product		* BlankProduct();
+products 	* BlankProducts();
+// ---------
+product		* InsertIntoProduct(char product_name[20], float product_price,int product_count);
+products	* InsertIntoProducts(products * all_products, product * chk);
+// ---------
+products	* AddSampleProducts();
+products	* AddProduct(products * all_products);
+// ---------
+float	GetProductPrice(products * all_products, char * product_name);
+int		GetProductQuantity(products * all_products, char * product_name);
+void	UpdateProductQuantity(products * all_products, char * product_name, int product_count);
+// ---------
+void	SearchProductsByName(products * all_products, char * product_name);
+void	SearchProductsByPricerange(products * all_products, float min_price, float max_price);
+void	SearchProducts(products * all_products);
+// ---------
+void	ScreenSellingProducts(products * all_products);
+void	SellAndCashMemo(products * all_products);
+// ---------
+char	* RecordFile();
+FILE	* CreateRecordFile(char * file_name);
+void	RecordIntoFile(char * data, char * file_name);
+void	RecordProductIntoFile(char * product_name, float product_price, int product_count);
+
+products 	* RefreshDatabase();
+// ---------
+void	ScreenProducts(products * all_products);
+void	Dashboard(products * all_products);
+
+
+
+/* =-==-=-==-=-==-=-==-=-==-=-==-=-==-=
+//  - - - - - - functions - - - - - -
+// =-==-=-==-=-==-=-==-=-==-=-==-=-==-=*/
+
+product * BlankProduct()
+{
+	product * blank = (product *) malloc(sizeof(product));
+
+	return blank;
 }
-    products;
 
-void dashboard(products * all_products);
+products * BlankProducts(){
+	products * blank = (products *) malloc(sizeof(products));
+	blank -> next_product = NULL;
 
-product_info * blank_product_info();
-products * blank_products();
+	return blank;
+}
 
-products * sample_products();
+// -------------
 
-void screen_products(products * all_products);
-void screen_cashmemo(products * all_products);
-
-
-product_info * insert_product_info
-  (
+product * InsertIntoProduct(
 	char product_name[20],
 	float product_price,
 	int product_count
-  );
-
-products * insert_products(products * all_products, product_info * new_product);
-
-products * add_product(products * all_products);
-
-void search_products_by_name(products * all_products, char * product_name);
-void search_products_by_pricerange(products * all_products, float min_price, float max_price);
-void search_products(products * all_products);
-
-float get_product_price(products * all_products, char * product_name);
-int get_product_quantity(products * all_products, char * product_name);
-void update_product_quantity(products * all_products, char * product_name, int product_count);
-
-void sell_and_cash_memo(products * all_products);
-
-
-int main()
+)
 {
+	product * chk = BlankProduct();
+	strcpy(chk -> product_name, product_name);
+	chk -> product_price = product_price;
+	chk -> product_count = product_count;
 
-
-	/*dashboard();*/
-	products * all_products = NULL;
-
-
-
-	dashboard(all_products);
-
-    return 0;
+	return chk;
 }
 
-void sell_and_cash_memo(products * all_products)
+products * InsertIntoProducts(products * all_products, product * product)
+{
+	products * chk = BlankProducts();
+	chk -> product = product;
+
+	products * temp = BlankProducts();
+	temp = all_products;
+
+	if(temp == NULL)
+	{
+		all_products = chk;
+	}
+	else
+	{
+		while(temp -> next_product != NULL)
+		{
+			temp = temp -> next_product;
+		}
+		temp -> next_product = chk;
+	}
+
+	return all_products;
+}
+
+// -------------
+
+products * AddSampleProducts(){
+	products * all_products = BlankProducts();
+	products * sample_product1 = BlankProducts();
+	products * sample_product2 = BlankProducts();
+	products * sample_product3 = BlankProducts();
+	products * sample_product4 = BlankProducts();
+
+	sample_product1 -> product = InsertIntoProduct("Chal", 50, 100);
+	sample_product2 -> product = InsertIntoProduct("Dal", 100, 200);
+	sample_product3 -> product = InsertIntoProduct("Dudh", 150, 300);
+	sample_product4 -> product = InsertIntoProduct("Kola", 150, 300);
+
+	RecordProductIntoFile("Chal", 50, 100);
+	RecordProductIntoFile("Dal", 10, 200);
+	RecordProductIntoFile("Dudh", 150, 300);
+	RecordProductIntoFile("Kola", 150, 300);
+
+	sample_product1 -> next_product = sample_product2;
+	sample_product2 -> next_product = sample_product3;
+	sample_product3 -> next_product = sample_product4;
+	sample_product4 -> next_product = NULL;
+
+	all_products = sample_product1;
+
+	return all_products;
+}
+
+products * AddProduct(products * all_products)
+{
+	char product_name[20] = "";
+	float product_price = 1.1;
+	int product_count = 1;
+
+	printf(
+		"---------------\n"
+		" Add Product \n"
+		"---------------\n"
+		"\n"
+	);
+
+	printf(
+		"Product Name: "
+	);
+	getchar();
+	gets(product_name);
+
+	printf(
+		"Product Price: "
+	);
+	scanf("%f", &product_price);
+
+	printf(
+		"Product Count: "
+	);
+	scanf("%d", &product_count);
+
+	product * product = InsertIntoProduct(product_name, product_price, product_count);
+	printf(
+		"\n\n"
+		"Product Added\n"
+	);
+
+	all_products = InsertIntoProducts(all_products, product);
+	RecordProductIntoFile(product_name, product_price, product_count);
+
+	printf(
+		"Do You Want To Add More? - Y/N\n"
+	);
+
+	char answer;
+	answer = getch();
+
+	if(answer == 'y')
+	{
+		system("cls");
+		AddProduct(all_products);
+	}
+
+	return all_products;
+}
+
+// -------------
+
+float GetProductPrice(products * all_products, char * product_name)
+{
+	products * each_product = BlankProducts();
+	each_product = all_products;
+
+	int sl = 0, product_price = -1;
+
+	while(each_product != NULL)
+	{
+		if(strcmp(each_product -> product -> product_name, product_name) == 0)
+		{
+			product_price = each_product -> product -> product_price;
+		}
+		each_product = each_product -> next_product;
+	}
+
+	return product_price;
+}
+
+int GetProductQuantity(products * all_products, char * product_name)
+{
+	products * each_product = BlankProducts();
+	each_product = all_products;
+
+	int sl = 0, product_count = -1;
+
+	while(each_product != NULL)
+	{
+		if(strcmp(each_product -> product -> product_name, product_name) == 0)
+		{
+			product_count = each_product -> product -> product_count;
+		}
+		each_product = each_product -> next_product;
+	}
+
+	return product_count;
+}
+
+void UpdateProductQuantity(products * all_products, char * product_name, int product_count)
+{
+	products * each_product = BlankProducts();
+	each_product = all_products;
+
+	int sl = 0;
+
+	while(each_product != NULL)
+	{
+		if(strcmp(each_product -> product -> product_name, product_name) == 0)
+		{
+			each_product -> product -> product_count = product_count;
+		}
+		each_product = each_product -> next_product;
+	}
+}
+
+// -------------
+
+void SearchProductsByName(products * all_products, char * product_name)
+{
+	products * each_product = BlankProducts();
+	each_product = all_products;
+	printf(
+		"\n\n"
+		"Search Result:\n"
+	);
+	printf(
+		"----------------------------------------------------------\n"
+		"SL\tProduct\t\t\tPrice\t\tAvailable\n"
+		"----------------------------------------------------------\n"
+		"\n"
+	);
+	int sl = 0, product_found = 0;
+	while(each_product != NULL){
+		if(strcmp(each_product -> product -> product_name, product_name) == 0)
+		{
+			printf(
+				"%d\t%.9s\t\t\t%.2f\t\t  %d\n",
+				++sl,
+				each_product -> product -> product_name,
+				each_product -> product -> product_price,
+				each_product -> product -> product_count
+			);
+			product_found = 1;
+		}
+		each_product = each_product -> next_product;
+	}
+	if(product_found == 0)
+	{
+		printf("No Product Found\n");
+	}
+}
+
+void SearchProductsByPricerange(products * all_products, float min_price, float max_price)
+{
+	products * each_product = BlankProducts();
+	each_product = all_products;
+	printf(
+		"\n\n"
+		"Search Result\n"
+	);
+	printf(
+		"----------------------------------------------------------\n"
+		"SL\tProduct\t\t\tPrice\t\tQuantity\n"
+		"----------------------------------------------------------\n"
+		"\n"
+	);
+	int sl = 0, product_found = 0;
+	while(each_product != NULL){
+		if(
+			(each_product -> product -> product_price) >= min_price &&
+			(each_product -> product -> product_price) <= max_price
+		){
+			printf(
+				"%d\t%.9s\t\t\t%.2f\t\t  %d\n",
+				++sl,
+				each_product -> product -> product_name,
+				each_product -> product -> product_price,
+				each_product -> product -> product_count
+			);
+			product_found = 1;
+		}
+
+		each_product = each_product -> next_product;
+	}
+	if(product_found == 0){
+		printf("No Product Found\n");
+	}
+}
+
+void SearchProducts(products * all_products)
+{
+	system("cls");
+	printf(
+		"--------------------\n"
+		" Search Products\n"
+		"--------------------\n"
+		"\n"
+	);
+	printf(
+		"1. Search By Product Name\n"
+		"2. Search By Price Range\n"
+		"\n"
+	);
+	int option;
+	printf("Option: ");
+	scanf("%d", &option);
+	printf("\n");
+	if(option == 1){
+		char search_product_name[20];
+		printf("Product Name: ");
+		getchar();
+		gets(search_product_name);
+		SearchProductsByName(all_products, search_product_name);
+	}else{
+		float min_price, max_price;
+		printf("Set Range Of Price: ");
+		scanf("%f %f", &min_price, &max_price);
+		SearchProductsByPricerange(all_products, min_price, max_price);
+	}
+}
+
+// -------------
+
+void ScreenSellingProducts(products * all_products){
+	products * each_product = BlankProducts();
+	each_product = all_products;
+	float total_price = 0;
+	printf(
+		"---------------------------------------------------------------------\n"
+		"SL\tProduct\t\tUnit\tUnitprice\tNetprice\n"
+		"---------------------------------------------------------------------\n"
+		"\n"
+	);
+	int sl = 0;
+	if(each_product == NULL)
+	{
+		printf("No Products Found\n");
+	}
+	while(each_product != NULL){
+		printf(
+			"%d\t%.9s\t\t %d\t  %.2f\t\t%.2f\n",
+			++sl,
+			each_product -> product -> product_name,
+			each_product -> product -> product_count,
+			each_product -> product -> product_price,
+			each_product -> product -> product_price * each_product -> product -> product_count
+		);
+		total_price = total_price + (each_product -> product -> product_price * each_product -> product -> product_count);
+		each_product = each_product -> next_product;
+	}
+	printf(
+		"\n"
+		"---------------------------------------------------------------------\n"
+		"Total:\t\t\t\t\t\t%.2f\n"
+		"---------------------------------------------------------------------\n"
+		"\n",
+		total_price
+	);
+}
+
+void SellAndCashMemo(products * all_products)
 {
 	char customer_name[20];
 	char customer_phone[15];
@@ -100,342 +424,193 @@ void sell_and_cash_memo(products * all_products)
 	getchar();
 	gets(customer_name);
 
-	printf("Customer Contact Number: ");
+	printf("Contact: ");
 	gets(customer_phone);
 
 	printf(
 		"\n"
-		"Number of Item: "
+		"Number Of Products: "
 	);
 	scanf("%d", &num_of_products);
 	printf("\n\n");
 
 	products * sold_products = NULL;
 
-	int loop;
-	for(loop = 0; loop < num_of_products; loop++){
+	int loo;
+	for(loo = 0; loo < num_of_products; loo++){
 		printf("Product Name: ");
 		getchar();
 		gets(product_name);
 
 		printf("Product Quantity: ");
 		scanf("%d", &product_quantity);
-		product_price = get_product_price(all_products, product_name);
-		product_info * sold_product_item = insert_product_info(
+		product_price = GetProductPrice(all_products, product_name);
+		product * sold_product_item = InsertIntoProduct(
 			product_name,
 			product_price,
 			product_quantity
 		);
-		sold_products = insert_products(sold_products, sold_product_item);
+		sold_products = InsertIntoProducts(sold_products, sold_product_item);
 		printf("\n");
-		update_product_quantity(all_products, product_name, (get_product_quantity(all_products, product_name) - product_quantity));
+		UpdateProductQuantity(all_products, product_name, (GetProductQuantity(all_products, product_name) - product_quantity));
 	}
 
 	printf(
 		"\n\n"
-		" Product sold to: \n"
+		"Product Sold To: \n"
 		"\tCustomer Name: %s\n"
-		"\tCustomer Contact Number: %s\n"
+		"\tContact: %s\n"
 		"\n",
 		customer_name, customer_phone
 	);
 
-	screen_cashmemo(sold_products);
+	ScreenSellingProducts(sold_products);
 }
 
-void screen_cashmemo(products * all_products)
-{
-	products * each_product = blank_products();
-	each_product = all_products;
-	float total_price = 0;
-	printf(
-		"---------------------------------------------------------------------\n"
-		"SL\tProduct\t\tUnit\tUnit Price\tNet Price\n"
-		"---------------------------------------------------------------------\n"
-		"\n"
-	);
-	int sl = 0;
-	if(each_product == NULL)
-        {
-		printf("No Product Found\n");
-	    }
-	while(each_product != NULL)
-        {
-		printf(
-			"%d\t%.9s\t\t %d\t  %.2f\t\t%.2f\n",
-			++sl,
-			each_product -> single_product -> product_name,
-			each_product -> single_product -> product_count,
-			each_product -> single_product -> product_price,
-			each_product -> single_product -> product_price * each_product -> single_product -> product_count
-		);
-		total_price = total_price + (each_product -> single_product -> product_price * each_product -> single_product -> product_count);
-		each_product = each_product -> next_product;
-    	}
-	printf(
-		"\n"
-		"---------------------------------------------------------------------\n"
-		"total:\t\t\t\t\t\t%.2f\n"
-		"---------------------------------------------------------------------\n"
-		"\n",
-		total_price
-	);
+char * RecordFile(){
+	return "RecordFile.txt";
 }
 
-void update_product_quantity(products * all_products, char * product_name, int product_count)
-{
-	products * each_product = blank_products();
-	each_product = all_products;
+// -------------
 
-	int sl = 0;
-
-	while(each_product != NULL)
-        {
-		if(strcmp(each_product -> single_product -> product_name, product_name) == 0)
-            {
-			each_product -> single_product -> product_count = product_count;
-            }
-		each_product = each_product -> next_product;
-        }
+FILE * CreateRecordFile(char * file_name){
+	FILE * RecordFile = fopen(file_name, "a+");
+	if(RecordFile == NULL){
+        puts("Sorry! Cant open file");
+        // StopProcessing();
+        exit(1);
+    }
+	return RecordFile;
 }
 
-float get_product_price(products * all_products, char * product_name)
-{
-	products * each_product = blank_products();
-	each_product = all_products;
-
-	int sl = 0, product_price = -1;
-
-	while(each_product != NULL)
-        {
-		if(strcmp(each_product -> single_product -> product_name, product_name) == 0)
-            {
-			product_price = each_product -> single_product -> product_price;
-            }
-		each_product = each_product -> next_product;
-        }
-
-	return product_price;
+void RecordIntoFile(char * data, char * file_name){
+	FILE * pointr = CreateRecordFile(file_name);
+	fputs(data, pointr);
+	fclose(pointr);
 }
 
-int get_product_quantity(products * all_products, char * product_name)
+void RecordProductIntoFile(char * product_name, float product_price, int product_count)
 {
-	products * each_product = blank_products();
-	each_product = all_products;
+	char * string_product_price = (char *) malloc(sizeof(char));
+	char * string_product_count = (char *) malloc(sizeof(char));
 
-	int sl = 0, product_count = -1;
+	itoa(product_price, string_product_price, 10);
+	itoa(product_count, string_product_count, 10);
 
-	while(each_product != NULL)
-        {
-		if(strcmp(each_product -> single_product -> product_name, product_name) == 0)
-            {
-			product_count = each_product -> single_product -> product_count;
-            }
-		each_product = each_product -> next_product;
-        }
+	RecordIntoFile(product_name, RecordFile());
+	RecordIntoFile(",", RecordFile());
 
-	return product_count;
+	RecordIntoFile(string_product_price , RecordFile());
+	RecordIntoFile(",", RecordFile());
+
+	RecordIntoFile(string_product_count, RecordFile());
+	RecordIntoFile("\n", RecordFile());
 }
 
-void search_products(products * all_products)
-{
-	system("cls");
-	printf(
-		"--------------------\n"
-		" search Product\n"
-		"--------------------\n"
-		"\n"
-	);
-	printf(
-		"1. Search By Product Name\n"
-		"2. Search By Price Range\n"
-		"\n"
-         );
-	int option;
-	printf("option: ");
-	scanf("%d", &option);
-	printf("\n");
-	if(option == 1)
-      {
-		char search_product_name[20];
-		printf("Product Name: ");
-		getchar();
-		gets(search_product_name);
-		search_products_by_name(all_products, search_product_name);
-      }
-       else
-      {
-		float min_price, max_price;
-		printf("\n NOTE:Input Range By Pressing Enter Button ");
-		printf("\n Enter Price Range: ");
-		scanf("%f %f", &min_price, &max_price);
-		search_products_by_pricerange(all_products, min_price, max_price);
-      }
-}
+void ScreenFromRecordFile(){
+	FILE * pointr = CreateRecordFile(RecordFile());
+	char test[123];
 
-void search_products_by_pricerange(products * all_products, float min_price, float max_price)
-{
-	products * each_product = blank_products();
-	each_product = all_products;
-	printf(
-		"\n\n"
-		"**Search Result**\n"
-	);
+	printf("$$- products information from database\n");
 	printf(
 		"----------------------------------------------------------\n"
-		"SL\tProduct\t\t\tPrice\t\tQuantity\n"
+		"Sl\tProduct\t\tPrice\t\tAvailable\n"
 		"----------------------------------------------------------\n"
 		"\n"
 	);
-	int sl = 0, product_found = 0;
-	while(each_product != NULL)
-      {
-		if(
-			(each_product -> single_product -> product_price) >= min_price
-                                        &&
-			(each_product -> single_product -> product_price) <= max_price
-          )
-	    	{
-			printf(
-				"%d\t%.9s\t\t\t%.2f\t\t  %d\n",
-				++sl,
-				each_product -> single_product -> product_name,
-				each_product -> single_product -> product_price,
-				each_product -> single_product -> product_count
-			     );
-			product_found = 1;
-		    }
 
-		each_product = each_product -> next_product;
+	int sl = 1;
+	while(fgets(test, 123, pointr)){
+		int chk1;
+		printf("%d\t", sl++);
+		for(chk1 = 0; chk1 < strlen(test); chk1++){
+			if(test[chk1] == ','){
+				printf("\t\t");
+			}else{
+				printf("%c", test[chk1]);
+			}
+
+		}
 	}
-	if(product_found == 0)
-        {
-		printf("No Product Found\n");
-     	}
+	fclose(pointr);
 }
 
-
-void search_products_by_name(products * all_products, char * product_name)
+products * RefreshDatabase()
 {
-	products * each_product = blank_products();
+	products * all_products = NULL;
+	FILE * pointr = CreateRecordFile(RecordFile());
+	char each_line[123];
+
+	int sl = 1;
+
+	char * str_product_name = (char *) malloc(sizeof(char));
+	char * str_product_price = (char *) malloc(sizeof(char));
+	char * str_product_count = (char *) malloc(sizeof(char));
+
+	while(fgets(each_line, 123, pointr))
+	{
+		int chk1, chk12, chk13, chk14;
+
+		for(int temp = 0; temp < 15; temp++)
+		{
+			str_product_name[temp] = '\0';
+			str_product_price[temp] = '\0';
+			str_product_count[temp] = '\0';
+		}
+		int commacount = 0;
+		for(chk1 = 0, chk12 = 0, chk13 = 0, chk14 = 0; chk1 < strlen(each_line); chk1++)
+		{
+			if(each_line[chk1] != ',' && commacount < 1){
+				str_product_name[chk12++] = each_line[chk1];
+			}
+
+			if(each_line[chk1] == ',')
+			{
+				commacount++;
+			}
+			if(commacount < 2)
+			{
+
+				if(each_line[chk1] >= 48 && each_line[chk1] <= 57)
+				{
+					str_product_price[chk13++] = each_line[chk1];
+				}
+			}
+			if(commacount >= 2 && each_line[chk1] != '\n'){
+				if(each_line[chk1] >= 48 && each_line[chk1] <= 57)
+				{
+					str_product_count[chk14++] = each_line[chk1];
+				}
+			}
+		}
+
+		float product_price =  atof(str_product_price);
+		int product_count =  atoi(str_product_count);
+
+
+		product * product = InsertIntoProduct(
+			str_product_name,
+			product_price,
+			product_count
+		);
+		all_products = InsertIntoProducts(all_products, product);
+	}
+
+	fclose(pointr);
+
+	return all_products;
+}
+
+// -------------
+
+void ScreenProducts(products * all_products)
+{
+	products * each_product = BlankProducts();
 	each_product = all_products;
-	printf(
-		"\n\n"
-		"** Search Result **\n"
-	);
+	printf("$$- Products Information Here\n");
 	printf(
 		"----------------------------------------------------------\n"
 		"SL\tProduct\t\t\tPrice\t\tAvailable\n"
-		"----------------------------------------------------------\n"
-		"\n"
-	);
-	int sl = 0, product_found = 0;
-	while(each_product != NULL)
-    {
-		if(strcmp(each_product -> single_product -> product_name, product_name) == 0)
-		   {
-			printf(
-				"%d\t%.9s\t\t\t%.2f\t\t  %d\n",
-				++sl,
-				each_product -> single_product -> product_name,
-				each_product -> single_product -> product_price,
-				each_product -> single_product -> product_count
-			);
-			product_found = 1;
-		   }
-		each_product = each_product -> next_product;
-	}
-	if(product_found == 0)
-	  {
-		printf("No Product Found\n");
-	  }
-}
-
-products * add_product(products * all_products)
-{
-    char product_name[20] = "ljk";
-	float product_price = 123.1;
-	int product_count = 123;
-
-	printf(
-		"--------------------------\n"
-		" Add Product Here\n"
-		"--------------------------\n"
-		"\n"
-	);
-
-	printf("Product Name: "	);
-	getchar();
-	gets(product_name);
-
-	printf("Product Price: "	);
-	scanf("%f", &product_price);
-
-	printf("product count: ");
-	scanf("%d", &product_count);
-	// products * new_product = NULL;
-
-	product_info * new_product_info = insert_product_info(product_name, product_price, product_count);
-	// new_product -> single_product = new_product_info;
-	printf(
-		"\n\n"
-		"** Product Added **\n"
-	);
-
-	all_products = insert_products(all_products, new_product_info);
-
-	return all_products;
-}
-
-products * insert_products(products * all_products, product_info * new_product_info)
-{
-	products * new_product = blank_products();
-	new_product -> single_product = new_product_info;
-
-	products * temp = blank_products();
-	temp = all_products;
-
-	if(temp == NULL)
-           {
-		    all_products = new_product;
-	        }
-    else
-	    {
-		while(temp -> next_product != NULL)
-            {
-			temp = temp -> next_product;
-	     	}
-		temp -> next_product = new_product;
-	    }
-
-
-	return all_products;
-}
-
-
-product_info * insert_product_info
-(
-	char product_name[20],
-	float product_price,
-	int product_count
-)
-
-{
-	product_info * new_product = blank_product_info();
-	strcpy(new_product -> product_name, product_name);
-	new_product -> product_price = product_price;
-	new_product -> product_count = product_count;
-	return new_product;
-}
-
-void screen_products(products * all_products)
-{
-	products * each_product = blank_products();
-	each_product = all_products;
-	printf("** Product Information **\n");
-	printf(
-		"----------------------------------------------------------\n"
-		" SL\tProduct\t\t\tPrice\t\tAvailable\n "
 		"----------------------------------------------------------\n"
 		"\n"
 	);
@@ -444,116 +619,93 @@ void screen_products(products * all_products)
 		printf("No Products Found\n");
 	}
 	while(each_product != NULL)
-     {
+	{
 		printf(
 			"%d\t%.9s\t\t\t%.2f\t\t  %d\n",
 			++sl,
-			each_product -> single_product -> product_name,
-			each_product -> single_product -> product_price,
-			each_product -> single_product -> product_count
+			each_product -> product -> product_name,
+			each_product -> product -> product_price,
+			each_product -> product -> product_count
 		);
 		each_product = each_product -> next_product;
-     }
+	}
 }
 
-product_info * blank_product_info()
+void Dashboard(products * all_products)
 {
-	product_info * blank = (product_info *) malloc(sizeof(product_info));
-	return blank;
-}
-products * blank_products()
-{
-	products * blank = (products *) malloc(sizeof(products));
-	blank -> next_product = NULL;
-	return blank;
-}
-
-products * sample_products()
-{
-	products * all_products = blank_products();
-	products * sample_product1 = blank_products();
-	products * sample_product2 = blank_products();
-	products * sample_product3 = blank_products();
-
-	sample_product1 -> single_product = insert_product_info("Chal", 10, 100);
-	sample_product2 -> single_product = insert_product_info("Daal", 20, 200);
-	sample_product3 -> single_product = insert_product_info("Dudh", 30, 300);
-	sample_product3 -> single_product = insert_product_info("Dim", 30, 300);
-
-	sample_product1 -> next_product = sample_product2;
-	sample_product2 -> next_product = sample_product3;
-	sample_product3 -> next_product = NULL;
-
-	all_products = sample_product1;
-
-	return all_products;
-}
-
-
-void dashboard(products * all_products)
-{
-
+	all_products = RefreshDatabase();
 	system("cls");
-
-	printf("%s\n", CurrentTime());
 
 	printf(
 		"------------\n"
 		" Dashboard\n"
 		"------------\n"
-                         );
+	);
 
 	printf(
 		"1. Add Product\n"
-		"2. Show All Products\n"
-		"3. Search product\n"
+		"2. Show All Product\n"
+		"3. Search Product\n"
 		"4. Invoice\n"
-		"5. Sample Products\n"
+		"5. Sample Product\n"
+		// "6. show all products from database\n"
 		"6. Exit\n"
-	                           );
-
-
+	);
 
 	int option;
 	printf(
 		"\n"
 		"Choose Your Option: "
-	     );
+	);
 	scanf("%d", &option);
+
 	system("cls");
 
 	if(option == 1)
-     {
-		all_products = add_product(all_products);
-	 }
-	else if(option == 2)
-	    {
-		screen_products(all_products);
-	    }
-    else if(option == 3)
-	    {
-		search_products(all_products);
-	    }
-    else if(option == 4)
-	    {
-		sell_and_cash_memo(all_products);
-	    }
-    else if(option == 5)
 	{
-		printf("** Sample Product Added **\n");
-		all_products = sample_products();
+		all_products = AddProduct(all_products);
 	}
-	else if(option == 6)
+	else if(option == 2)
 	{
-		printf("Exit With Respect..\n");
+		all_products = RefreshDatabase();
+		ScreenProducts(all_products);
+	}
+	else if(option == 3)
+	{
+        SearchProducts(all_products);
+	}
+	else if(option == 4)
+	{
+		SellAndCashMemo(all_products);
+	}
+	else if(option == 5)
+	{
+		printf("Sample Product Added\n");
+		all_products = AddSampleProducts();
+	}
+	// else if(option == 6){
+	// 	ScreenFromRecordFile();
+	// }
+	else if(option == 6){
+		printf("Thank You For Choosing Us\n");
 		exit(0);
 	}
 
-	printf(
-
-        "Press ENTER To Continue\n");
-
+	printf("\nPress Any Key To Continue\n");
 	getch();
+	// Sleep(1000);
+	Dashboard(all_products);
+}
 
-	dashboard(all_products);
+
+// =-==-=-==-=-==-=-==-=-==-=-==-=-==-=
+//  - - - - - - main funcn - - - - - -
+// =-==-=-==-=-==-=-==-=-==-=-==-=-==-=
+
+int main()
+{
+	products * all_products = NULL;
+	Dashboard(all_products);
+
+	return 0;
 }
