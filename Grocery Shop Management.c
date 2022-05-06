@@ -1,9 +1,9 @@
 
 /* ***************************************************
  * Asad Islam
- * asadulshakib10@gmail.com
- * 213902054, 213DB, Green University of Bangladesh
-
+ *213902054,DB 
+ *213902054@student.green.edu.bd
+ *Green University of Bangladesh
  * ***************************************************
  *****************************************************/
 
@@ -493,7 +493,6 @@ FILE * CreateRecordFile(char * file_name){
 	FILE * RecordFile = fopen(file_name, "a+");
 	if(RecordFile == NULL){
         puts("Sorry! Cant open file");
-        // StopProcessing();
         exit(1);
     }
 	return RecordFile;
@@ -666,7 +665,6 @@ printf("%s\n", CurrentTime());
 		"3. Search Product\n"
 		"4. Invoice\n"
 		"5. Sample Product\n"
-		// "6. show all products from database\n"
 		"6. Exit\n"
 	);
 
@@ -701,9 +699,6 @@ printf("%s\n", CurrentTime());
 		printf("Sample Product Added\n");
 		all_products = AddSampleProducts();
 	}
-	// else if(option == 6){
-	// 	ScreenFromRecordFile();
-	// }
 	else if(option == 6){
 		printf("Thank You For Choosing Us\n");
 		exit(0);
@@ -711,7 +706,6 @@ printf("%s\n", CurrentTime());
 
 	printf("\nPress Any Key To Continue\n");
 	getch();
-	// Sleep(1000);
 	Dashboard(all_products);
 }
 
